@@ -75,6 +75,7 @@ public:
     TH1* hTopPt;
     TH1* hDiTopMass;
     TH1 *hTau1, *hTau2, *hTau3;
+    TH1 *hTau32, *hTau21;
     TH1 *topPt, *topMass, *topEta;
     TH1 *topCandPt, *topCandMass, *topCandEta;
     TH1 *genTopPt, *genTopMass, *genTopEta;
@@ -117,6 +118,8 @@ public:
         hTau1      = bookHisto<TH1D>("Tau1", 100 , 0, 1);
         hTau2      = bookHisto<TH1D>("Tau2", 100 , 0, 1);
         hTau3      = bookHisto<TH1D>("Tau3", 100 , 0, 1);
+        hTau32     = bookHisto<TH1D>("Tau32", 100 , 0, 1);
+        hTau21     = bookHisto<TH1D>("Tau21", 100 , 0, 1);
         
         topPt   = bookHisto<TH1D>("topPt",   100,  0, 1000);
         topMass = bookHisto<TH1D>("topMass", 100,  0, 500);
@@ -188,12 +191,12 @@ public:
         const double& met    = tr.getVar<double>("met");
         const double& metphi = tr.getVar<double>("metphi");
 
-        const double& ht                   = tr.getVar<double>("HTTopTag");
-        const int&    vtxSize              = tr.getVar<int>("vtxSize");
-        const int&    cntCSVS              = tr.getVar<int>("cntCSVSTopTag");
-        const TopTaggerResults* ttr        = tr.getVar<TopTaggerResults*>("ttrMVA");
+        const double& ht            = tr.getVar<double>("HTTopTag");
+        const int&    vtxSize       = tr.getVar<int>("vtxSize");
+        const int&    cntCSVS       = tr.getVar<int>("cntCSVSTopTag");
+        const TopTaggerResults* ttr = tr.getVar<TopTaggerResults*>("ttrMVA");
 
-        const std::vector<TLorentzVector>& cutMuVec = tr.getVec<TLorentzVector>("cutMuVec");
+        const std::vector<TLorentzVector>& cutMuVec   = tr.getVec<TLorentzVector>("cutMuVec");
         const std::vector<TLorentzVector>& cutElecVec = tr.getVec<TLorentzVector>("cutElecVec");
 
         const std::vector<double>& tau1 = tr.getVec<double>("tau1");
@@ -202,7 +205,7 @@ public:
 
         const int& cntNJetsPt30Eta24 = tr.getVar<int>("cntNJetsPt30Eta24TopTag");
 
-        const std::vector<TLorentzVector>& vTops        = tr.getVec<TLorentzVector>("vTopsNewMVA");
+        const std::vector<TLorentzVector>& vTops = tr.getVec<TLorentzVector>("vTopsNewMVA");
 
 
         hMET->Fill(met, eWeight);
@@ -210,19 +213,39 @@ public:
         hNBJets->Fill(cntCSVS, eWeight);
         hNVertices->Fill(vtxSize,eWeight);
 
-        for(const auto& tau : tau1)
-        { 
-            hTau1->Fill(tau, eWeight);
-        }
-        for(const auto& tau : tau2)
-        { 
-            hTau2->Fill(tau, eWeight);
-        }
-        for(const auto& tau : tau3)
-        { 
-            hTau3->Fill(tau, eWeight);
+        // // fill tau 1, 2, 3 histos per vector entry
+        // for(const auto& tau : tau1)
+        // { 
+        //     hTau1->Fill(tau, eWeight);
+        // }
+        // for(const auto& tau : tau2)
+        // { 
+        //     hTau2->Fill(tau, eWeight);
+        // }
+        // for(const auto& tau : tau3)
+        // { 
+        //     hTau3->Fill(tau, eWeight);
+        // }
+
+        printf("Number of entries (tau1, tau2, tau3): (%d, %d, %d)\n", tau1.size(), tau2.size(), tau3.size());
+        if (not (tau1.size() == tau2.size() and tau1.size() == tau3.size()))
+        {
+            std::cout << "Tau 1, 2, and 3 do not have the same number of entries." << std::endl;
         }
 
+        // fill tau 1, 2, 3 histos per vector entry
+        for(int i=0; i<tau2.size(); i++)
+        {
+            double t1 = tau1[i];
+            double t2 = tau2[i];
+            double t3 = tau3[i];
+            hTau1->Fill(t1, eWeight);
+            hTau2->Fill(t2, eWeight);
+            hTau3->Fill(t3, eWeight);
+            hTau32->Fill(t3 / t2, eWeight);
+            hTau21->Fill(t2 / t1, eWeight);
+        } 
+        
         const std::vector<TLorentzVector>& genTops = tr.getVec<TLorentzVector>("genTops");
         const std::vector<TLorentzVector>& genTopsRecoMatch = tr.getVec<TLorentzVector>("vTopsGenMatchTriNewMVA");
 
