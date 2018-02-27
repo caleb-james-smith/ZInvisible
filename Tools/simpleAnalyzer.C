@@ -74,6 +74,7 @@ public:
     TH1* hTopP;
     TH1* hTopPt;
     TH1* hDiTopMass;
+    TH1 *hTau1, *hTau2, *hTau3;
     TH1 *topPt, *topMass, *topEta;
     TH1 *topCandPt, *topCandMass, *topCandEta;
     TH1 *genTopPt, *genTopMass, *genTopEta;
@@ -113,6 +114,10 @@ public:
         hTopPt     = bookHisto<TH1D>("TopPt", 100, 0, 1000);
         hDiTopMass = bookHisto<TH1D>("DiTopMass", 100, 0, 1500);
 
+        hTau1      = bookHisto<TH1D>("Tau1", 100 , 0, 1);
+        hTau2      = bookHisto<TH1D>("Tau2", 100 , 0, 1);
+        hTau3      = bookHisto<TH1D>("Tau3", 100 , 0, 1);
+        
         topPt   = bookHisto<TH1D>("topPt",   100,  0, 1000);
         topMass = bookHisto<TH1D>("topMass", 100,  0, 500);
         topEta  = bookHisto<TH1D>("topEta",  100, -5, 5);
@@ -191,6 +196,10 @@ public:
         const std::vector<TLorentzVector>& cutMuVec = tr.getVec<TLorentzVector>("cutMuVec");
         const std::vector<TLorentzVector>& cutElecVec = tr.getVec<TLorentzVector>("cutElecVec");
 
+        const std::vector<double>& tau1 = tr.getVec<double>("tau1");
+        const std::vector<double>& tau2 = tr.getVec<double>("tau2");
+        const std::vector<double>& tau3 = tr.getVec<double>("tau3");
+
         const int& cntNJetsPt30Eta24 = tr.getVar<int>("cntNJetsPt30Eta24TopTag");
 
         const std::vector<TLorentzVector>& vTops        = tr.getVec<TLorentzVector>("vTopsNewMVA");
@@ -200,6 +209,19 @@ public:
         hNJets->Fill(cntNJetsPt30Eta24, eWeight);
         hNBJets->Fill(cntCSVS, eWeight);
         hNVertices->Fill(vtxSize,eWeight);
+
+        for(const auto& tau : tau1)
+        { 
+            hTau1->Fill(tau, eWeight);
+        }
+        for(const auto& tau : tau2)
+        { 
+            hTau2->Fill(tau, eWeight);
+        }
+        for(const auto& tau : tau3)
+        { 
+            hTau3->Fill(tau, eWeight);
+        }
 
         const std::vector<TLorentzVector>& genTops = tr.getVec<TLorentzVector>("genTops");
         const std::vector<TLorentzVector>& genTopsRecoMatch = tr.getVec<TLorentzVector>("vTopsGenMatchTriNewMVA");
@@ -548,7 +570,10 @@ int main(int argc, char* argv[])
 
     int events = 0, pevents = 0;
 
-    HistoContainer histsQCD("QCD"), histsTTbar("ttbar");
+    HistoContainer histsQCD("QCD");
+    HistoContainer histsTTbar("ttbar");
+    HistoContainer histsBaseline("Baseline");
+    HistoContainer histsFriday("Friday");
 
     TRandom* trand = new TRandom3();
 
@@ -605,6 +630,7 @@ int main(int argc, char* argv[])
                 const double& metphi = tr.getVar<double>("metphi");
 
                 const bool&   passNoiseEventFilter = tr.getVar<bool>("passNoiseEventFilterTopTag");
+                const bool&   passBaseline         = tr.getVar<bool>("passBaselineTopTag");
                 const bool&   passSingleLep20      = tr.getVar<bool>("passSingleLep20");
                 const bool&   passLeptonVeto       = tr.getVar<bool>("passLeptVetoTopTag");
                 const bool&   passBJets            = tr.getVar<bool>("passBJetsTopTag");
@@ -641,6 +667,25 @@ int main(int argc, char* argv[])
                 int cntNJetsPt30Eta24 = AnaFunctions::countJets(tr.getVec<TLorentzVector>(jetVecLabel), AnaConsts::pt30Eta24Arr);
 
                 const std::vector<TLorentzVector>& vTops        = tr.getVec<TLorentzVector>("vTopsNewMVA");
+
+                //Baseline
+                if( passBaseline )
+                {
+                    histsBaseline.fill(tr, eWeight, trand);
+                }
+
+                //Friday Cuts
+                if( passBaseline 
+                    && passNoiseEventFilter
+                    && passBJets
+                    && (ht > 400)
+                    && (ht < 600)
+                    && (met > 200)
+                    && (met < 400)
+                    )
+                {
+                    histsFriday.fill(tr, eWeight, trand);
+                }
 
                 //High HT QCD control sample
                 if( (!isData || passHighHtTrigger)
@@ -698,6 +743,8 @@ int main(int argc, char* argv[])
             throw "File is zombie";
         }
 
+        histsBaseline.save(f);
+        histsFriday.save(f);
         histsQCD.save(f);
         histsTTbar.save(f);
 
