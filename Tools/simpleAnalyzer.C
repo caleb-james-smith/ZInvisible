@@ -196,8 +196,9 @@ public:
         const int&    cntCSVS       = tr.getVar<int>("cntCSVSTopTag");
         const TopTaggerResults* ttr = tr.getVar<TopTaggerResults*>("ttrMVA");
 
-        const std::vector<TLorentzVector>& cutMuVec   = tr.getVec<TLorentzVector>("cutMuVec");
-        const std::vector<TLorentzVector>& cutElecVec = tr.getVec<TLorentzVector>("cutElecVec");
+        const std::vector<TLorentzVector>& cutMuVec    = tr.getVec<TLorentzVector>("cutMuVec");
+        const std::vector<TLorentzVector>& cutElecVec  = tr.getVec<TLorentzVector>("cutElecVec");
+        const std::vector<TLorentzVector>& ak8JetsLVec = tr.getVec<TLorentzVector>("ak8JetsLVec");
 
         const std::vector<double>& tau1 = tr.getVec<double>("tau1");
         const std::vector<double>& tau2 = tr.getVec<double>("tau2");
@@ -227,24 +228,37 @@ public:
         //     hTau3->Fill(tau, eWeight);
         // }
 
-        printf("Number of entries (tau1, tau2, tau3): (%d, %d, %d)\n", tau1.size(), tau2.size(), tau3.size());
+        printf("Number of entries (ak8JetsLVec, tau1, tau2, tau3): (%d, %d, %d, %d)", ak8JetsLVec.size(), tau1.size(), tau2.size(), tau3.size());
         if (not (tau1.size() == tau2.size() and tau1.size() == tau3.size()))
         {
             std::cout << "Tau 1, 2, and 3 do not have the same number of entries." << std::endl;
         }
+        if (not (tau1.size() == ak8JetsLVec.size()))
+        {
+            std::cout << "Tau 1 and ak8JetsLVec do not have the same number of entries." << std::endl;
+        }
 
         // fill tau 1, 2, 3 histos per vector entry
+        // use ak8JetsLVec : vector<TLorentzVector> to make cut: jet pt > 400 GeV
+        int n_filled = 0;
         for(int i=0; i<tau2.size(); i++)
         {
             double t1 = tau1[i];
             double t2 = tau2[i];
             double t3 = tau3[i];
-            hTau1->Fill(t1, eWeight);
-            hTau2->Fill(t2, eWeight);
-            hTau3->Fill(t3, eWeight);
-            hTau32->Fill(t3 / t2, eWeight);
-            hTau21->Fill(t2 / t1, eWeight);
+            double pt = ak8JetsLVec[i].Pt();
+            printf(" pt_%d=%f", i, pt);
+            if (pt > 400)
+            {
+                hTau1->Fill(t1, eWeight);
+                hTau2->Fill(t2, eWeight);
+                hTau3->Fill(t3, eWeight);
+                hTau32->Fill(t3 / t2, eWeight);
+                hTau21->Fill(t2 / t1, eWeight);
+                n_filled += 1;
+            }
         } 
+        printf(" n_filled=%d\n",n_filled);
         
         const std::vector<TLorentzVector>& genTops = tr.getVec<TLorentzVector>("genTops");
         const std::vector<TLorentzVector>& genTopsRecoMatch = tr.getVec<TLorentzVector>("vTopsGenMatchTriNewMVA");
