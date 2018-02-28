@@ -228,7 +228,7 @@ public:
         //     hTau3->Fill(tau, eWeight);
         // }
 
-        printf("Number of entries (ak8JetsLVec, tau1, tau2, tau3): (%d, %d, %d, %d)", ak8JetsLVec.size(), tau1.size(), tau2.size(), tau3.size());
+        //printf("Number of entries (ak8JetsLVec, tau1, tau2, tau3): (%d, %d, %d, %d)", ak8JetsLVec.size(), tau1.size(), tau2.size(), tau3.size());
         if (not (tau1.size() == tau2.size() and tau1.size() == tau3.size()))
         {
             std::cout << "Tau 1, 2, and 3 do not have the same number of entries." << std::endl;
@@ -247,7 +247,7 @@ public:
             double t2 = tau2[i];
             double t3 = tau3[i];
             double pt = ak8JetsLVec[i].Pt();
-            printf(" pt_%d=%f", i, pt);
+            //printf(" pt_%d=%f", i, pt);
             if (pt > 400)
             {
                 hTau1->Fill(t1, eWeight);
@@ -258,7 +258,7 @@ public:
                 n_filled += 1;
             }
         } 
-        printf(" n_filled=%d\n",n_filled);
+        //printf(" n_filled=%d\n",n_filled);
         
         const std::vector<TLorentzVector>& genTops = tr.getVec<TLorentzVector>("genTops");
         const std::vector<TLorentzVector>& genTopsRecoMatch = tr.getVec<TLorentzVector>("vTopsGenMatchTriNewMVA");
