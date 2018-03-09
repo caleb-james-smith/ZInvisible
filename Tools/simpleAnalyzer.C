@@ -4,7 +4,7 @@
 #include "derivedTupleVariables.h"
 #include "baselineDef.h"
 #include "BTagCorrector.h"
-//#include "TTbarCorrector.h"
+#include "TTbarCorrector.h"
 #include "ISRCorrector.h"
 #include "PileupWeights.h"
 #include "customize.h"
@@ -247,7 +247,7 @@ int main(int argc, char* argv[])
             plotterFunctions::TriggerInfo triggerInfo(false, false);
             
             BTagCorrector bTagCorrector("allINone_bTagEff.root", "", false);
-            //TTbarCorrector ttbarCorrector(false, "");
+            TTbarCorrector ttbarCorrector(false, "");
             ISRCorrector ISRcorrector("allINone_ISRJets.root","","");   
             Pileup_Sys pileup("PileupHistograms_0121_69p2mb_pm4p6.root");
 
@@ -257,7 +257,7 @@ int main(int argc, char* argv[])
             //tr.registerFunction(prepareTopVars);
             tr.registerFunction(triggerInfo);
             tr.registerFunction(bTagCorrector);
-            //tr.registerFunction(ttbarCorrector);
+            tr.registerFunction(ttbarCorrector);
             tr.registerFunction(ISRcorrector);
             tr.registerFunction(pileup);
 
@@ -307,7 +307,7 @@ int main(int argc, char* argv[])
                     const double& bTagWF             = tr.getVar<double>("bTagSF_EventWeightSimple_Central");
                     if(enableTTbar)
                     {
-                        const double& ttbarWF            = tr.getVar<double>("TTbarWF");         
+                        const double& ttbarWF        = tr.getVar<double>("TTbarWF");         
                         eWeight *= ttbarWF;
                     }
                     const double& triggerWF          = tr.getVar<double>("TriggerEffMC");
