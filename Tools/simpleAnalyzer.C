@@ -67,8 +67,10 @@ private:
 
 public:
     TH1* hMET;
+    TH1* hHT;
     TH1* hNJets;
     TH1* hNBJets;
+    TH1* hNTops;
     TH1* hNVertices;
 
     HistoContainer(const std::string& csName = "") : csName_(csName)
@@ -76,8 +78,10 @@ public:
         if(csName_.size() > 0) csName_ += "_";
 
         hMET       = bookHisto<TH1D>("MET",100,0, 1000);
+        hHT        = bookHisto<TH1D>("HT",100,0, 2000);
         hNJets     = bookHisto<TH1D>("nJets",21,-0.5, 20.5);
         hNBJets    = bookHisto<TH1D>("nBJets",21,-0.5, 20.5);
+        hNTops     = bookHisto<TH1D>("nTops",21,-0.5, 20.5);
         hNVertices = bookHisto<TH1D>("nVertices",61,-0.5, 60.5);
 
     }
@@ -86,16 +90,17 @@ public:
     {
         const double& met               = tr.getVar<double>("met");
         const double& metphi            = tr.getVar<double>("metphi");
-
         const double& ht                = tr.getVar<double>("HTTopTag");
         const int&    vtxSize           = tr.getVar<int>("vtxSize");
-        const int&    cntCSVS           = tr.getVar<int>("cntCSVSTopTag"); // number of bottom quarks
-
-        const int&    cntNJetsPt30Eta24 = tr.getVar<int>("cntNJetsPt30Eta24TopTag"); // number of jets
+        const int&    cntCSVS           = tr.getVar<int>("cntCSVSTopTag");              // number of bottom jets
+        const int&    nTops             = tr.getVar<int>("nTopCandSortedCntTopTag");    // number of top quarks
+        const int&    cntNJetsPt30Eta24 = tr.getVar<int>("cntNJetsPt30Eta24TopTag");    // number of jets
 
         hMET->Fill(met, eWeight);
+        hHT->Fill(ht, eWeight);
         hNJets->Fill(cntNJetsPt30Eta24, eWeight);
         hNBJets->Fill(cntCSVS, eWeight);
+        hNTops->Fill(nTops, eWeight);
         hNVertices->Fill(vtxSize,eWeight);
         
     }
