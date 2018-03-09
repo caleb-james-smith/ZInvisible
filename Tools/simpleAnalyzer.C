@@ -218,7 +218,6 @@ int main(int argc, char* argv[])
     HistoContainer histsQCD("QCD");
     HistoContainer histsTTbar("ttbar");
     HistoContainer histsBaseline("Baseline");
-    HistoContainer histsFriday("Friday");
 
     TRandom* trand = new TRandom3();
 
@@ -317,19 +316,6 @@ int main(int argc, char* argv[])
                     histsBaseline.fill(tr, eWeight, trand);
                 }
 
-                //Friday Cuts
-                if( passBaseline 
-                    && passNoiseEventFilter
-                    && passBJets
-                    && (ht > 400)
-                    && (ht < 600)
-                    && (met > 200)
-                    && (met < 400)
-                    )
-                {
-                    histsFriday.fill(tr, eWeight, trand);
-                }
-
                 //High HT QCD control sample
                 if( (!isData || passHighHtTrigger)
                     && passNoiseEventFilter 
@@ -386,7 +372,6 @@ int main(int argc, char* argv[])
         }
 
         histsBaseline.save(f);
-        histsFriday.save(f);
         histsQCD.save(f);
         histsTTbar.save(f);
 
