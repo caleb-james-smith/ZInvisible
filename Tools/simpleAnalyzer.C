@@ -224,9 +224,10 @@ int main(int argc, char* argv[])
 
     int events = 0, pevents = 0;
 
+    HistoContainer histsBaseline("Baseline");
+    HistoContainer histsSingleLepton("SingleLepton");
     HistoContainer histsQCD("QCD");
     HistoContainer histsTTbar("ttbar");
-    HistoContainer histsBaseline("Baseline");
 
     TRandom* trand = new TRandom3();
 
@@ -242,7 +243,8 @@ int main(int argc, char* argv[])
             std::cout << "Tree: " << fs.treePath << std::endl;
             //std::cout << "sigma*lumi: " << fs.getWeight() << std::endl;
             
-            BaselineVessel myBLV(*static_cast<NTupleReader*>(nullptr), "TopTag", "");
+            BaselineVessel myBLVtoptag(*static_cast<NTupleReader*>(nullptr), "TopTag", "");
+            BaselineVessel myBLVlostlepton(*static_cast<NTupleReader*>(nullptr), "lostlept", "");
             //plotterFunctions::PrepareTopVars prepareTopVars;
             plotterFunctions::TriggerInfo triggerInfo(false, false);
             
@@ -253,7 +255,8 @@ int main(int argc, char* argv[])
 
             NTupleReader tr(t);
             tr.registerFunction(filterEvents);
-            tr.registerFunction(myBLV);
+            tr.registerFunction(myBLVtoptag);
+            tr.registerFunction(myBLVlostlepton);
             //tr.registerFunction(prepareTopVars);
             tr.registerFunction(triggerInfo);
             tr.registerFunction(bTagCorrector);
@@ -289,13 +292,15 @@ int main(int argc, char* argv[])
                 const bool&   passnJets            = tr.getVar<bool>("passnJetsTopTag");
                 const bool&   passdPhis            = tr.getVar<bool>("passdPhisTopTag");
                 const double& ht                   = tr.getVar<double>("HTTopTag");
+                
+                const bool&   passSingleLepton     = tr.getVar<bool>("passBaselineSingleLeptonlostlept");
 
-                const bool& passMuTrigger     = tr.getVar<bool>("passMuTrigger");
-                const bool& passElecTrigger   = tr.getVar<bool>("passElecTrigger");
-                const bool& passMETMHTTrigger = tr.getVar<bool>("passMETMHTTrigger");
-                const bool& passSearchTrigger = tr.getVar<bool>("passSearchTrigger");
-                const bool& passHighHtTrigger = tr.getVar<bool>("passHighHtTrigger");
-                const bool& passPhotonTrigger = tr.getVar<bool>("passPhotonTrigger");
+                const bool&   passMuTrigger        = tr.getVar<bool>("passMuTrigger");
+                const bool&   passElecTrigger      = tr.getVar<bool>("passElecTrigger");
+                const bool&   passMETMHTTrigger    = tr.getVar<bool>("passMETMHTTrigger");
+                const bool&   passSearchTrigger    = tr.getVar<bool>("passSearchTrigger");
+                const bool&   passHighHtTrigger    = tr.getVar<bool>("passHighHtTrigger");
+                const bool&   passPhotonTrigger    = tr.getVar<bool>("passPhotonTrigger");
 
                 const double isData = !tr.checkBranch("genDecayLVec");
 
@@ -323,6 +328,12 @@ int main(int argc, char* argv[])
                 if( passBaseline )
                 {
                     histsBaseline.fill(tr, eWeight, trand);
+                }
+
+                //Single Lepton
+                if( passSingleLepton )
+                {
+                    histsSingleLepton.fill(tr, eWeight, trand);
                 }
 
                 //High HT QCD control sample
@@ -381,6 +392,7 @@ int main(int argc, char* argv[])
         }
 
         histsBaseline.save(f);
+        histsSingleLepton.save(f);
         histsQCD.save(f);
         histsTTbar.save(f);
 
