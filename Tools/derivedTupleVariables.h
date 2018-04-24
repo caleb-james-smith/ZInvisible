@@ -887,6 +887,7 @@ namespace plotterFunctions
             bool passMuZinvSel   =  passEleVeto && (cutMuVec->size() == 2   && sumMuCharge == 0   && (*cutMuVec)[0].Pt() > highMuPt     && (*cutMuVec)[1].Pt() > minMuPt)     && (bestRecoMuZ.M() > zMassMin)   && (bestRecoMuZ.M() < zMassMax);
             bool passElecZinvSel = passMuonVeto && (cutElecVec->size() == 2 && sumElecCharge == 0 && (*cutElecVec)[0].Pt() > highElecPt && (*cutElecVec)[1].Pt() > minElecPt) && (bestRecoElecZ.M() > zMassMin) && (bestRecoElecZ.M() < zMassMax);
             bool passElMuZinvSel = (cutMuVec->size() == 1 && cutElecVec->size() == 1 && sumElecCharge == -sumMuCharge && (*cutMuVec)[0].Pt() > highMuPt && (*cutElecVec)[0].Pt() > minMuPt) && (bestRecoElMuZ.M() > zMassMin) && (bestRecoElMuZ.M() < zMassMax);
+            bool passMuZinvSel_lowpt   =  passEleVeto && (cutMuVec->size() == 2   && sumMuCharge == 0   && (*cutMuVec)[0].Pt() > minMuPt     && (*cutMuVec)[1].Pt() > minMuPt)     && (bestRecoMuZ.M() > zMassMin)   && (bestRecoMuZ.M() < zMassMax);
 
             double cutMuPt1 = -999.9;
             double cutMuPt2 = -999.9;
@@ -969,6 +970,7 @@ namespace plotterFunctions
             tr.registerDerivedVar("passElMuSel", passElMuSel);
 
             tr.registerDerivedVar("passMuZinvSel", passMuZinvSel);
+            tr.registerDerivedVar("passMuZinvSel_lowpt", passMuZinvSel_lowpt);
             tr.registerDerivedVar("passElecZinvSel", passElecZinvSel);
             tr.registerDerivedVar("passElMuZinvSel", passElMuZinvSel);
 
@@ -2661,6 +2663,7 @@ namespace plotterFunctions
 	    tr.registerDerivedVec("puppitau3Dtau2", puppitau3Dtau2);
             
 	    ///WTagging
+	   /* 
             for(int tau = 0; tau < (*puppitau2Dtau1).size(); ++tau){
                if (puppisoftDropMass[tau]>65 && puppisoftDropMass[tau]<100){
 		   // push back tau variables after mass cut
@@ -2676,8 +2679,9 @@ namespace plotterFunctions
 		   }
                } 
 	    }
-
+            */
             //Top 1%
+            /*
 	    for(int tau = 0; tau < (*puppitau3Dtau2).size(); ++tau){
 		if (puppisoftDropMass[tau]>105 && puppisoftDropMass[tau]<210){
 		    puppitau3Dtau2_SDM->push_back(puppitau3Dtau2->at(tau));
@@ -2691,7 +2695,7 @@ namespace plotterFunctions
 		    }
 		}
 	    }
-	    
+	    */
 	    tr.registerDerivedVec("puppiLVectight_top", puppiLVectight_top);
 	    tr.registerDerivedVec("puppiLVecLoose_top", puppiLVecLoose_top);
 	    tr.registerDerivedVec("puppiLVectight_w", puppiLVectight_w);
