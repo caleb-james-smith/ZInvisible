@@ -145,25 +145,5 @@ int main()
         qp.plot(histoMap, it->first + "_Distribution", it->first, "events");
     }
     
-    
-    //for(auto& histo : singleLeptonHistos)   std::cout << "this should be nonzero: " << histo << std::endl;
-
-    //QuickPlot qp = QuickPlot();
-    //qp.plot(baselineHistos, "Baseline");
-
-    // Baseline->SetLineColor(kRed+1);
-    
-    // TCanvas* c1 = new TCanvas("c1","c1");
-    // Baseline->Draw("hist E");
-    // c1->Modified();
-    // c1->Update();
-    // c1->SaveAs("MET.pdf");
-
-    // TCanvas* c2 = new TCanvas("c2","c2");
-    // c2->Modified();
-    // c2->Update();
-
 }
-
-
 
