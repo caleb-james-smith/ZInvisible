@@ -6,6 +6,7 @@
 
 #include <string>
 #include <vector>
+#include <map>
 
 
 class QuickPlot
@@ -18,7 +19,7 @@ private:
 public:
     // public things
     QuickPlot();
-    void plot(std::vector<TH1*> histos, std::string title);
+    void plot(std::map<std::string, TH1*> histos, std::string p_title, std::string x_title, std::string y_title);
 
 };
 

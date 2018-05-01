@@ -3,15 +3,11 @@
 
 #include "TChain.h"
 #include "TFile.h"
-#include "TH1.h"
 #include "TLegend.h"
 #include "TCanvas.h"
 
 #include <iostream>
 #include <stdio.h>
-#include <string>
-#include <vector>
-#include <map>
 
 QuickPlot::QuickPlot()
 {
@@ -22,9 +18,9 @@ QuickPlot::QuickPlot()
     m_colors.push_back(kViolet-6);
 }
 
-void QuickPlot::plot(std::vector<TH1*> histos, std::string title)
+void QuickPlot::plot(std::map<std::string, TH1*> histos, std::string p_title, std::string x_title, std::string y_title)
 {
-    printf("Running QuickPlot::plot() for %s\n", title.c_str());
+    printf("Running QuickPlot::plot() for %s\n", p_title.c_str());
 }
 
 int main()
@@ -75,6 +71,14 @@ int main()
     baselineHistos.insert(std::pair<std::string, TH1*>("nTops",      Baseline_nTops));
     baselineHistos.insert(std::pair<std::string, TH1*>("nVertices",  Baseline_nVertices));
 
+    singleLeptonHistos.insert(std::pair<std::string, TH1*>("MET",        SingleLepton_MET));
+    singleLeptonHistos.insert(std::pair<std::string, TH1*>("HT",         SingleLepton_HT));
+    singleLeptonHistos.insert(std::pair<std::string, TH1*>("MT2",        SingleLepton_MT2));
+    singleLeptonHistos.insert(std::pair<std::string, TH1*>("nJets",      SingleLepton_nJets));
+    singleLeptonHistos.insert(std::pair<std::string, TH1*>("nBJets",     SingleLepton_nBJets));
+    singleLeptonHistos.insert(std::pair<std::string, TH1*>("nTops",      SingleLepton_nTops));
+    singleLeptonHistos.insert(std::pair<std::string, TH1*>("nVertices",  SingleLepton_nVertices));
+
     //singleLeptonHistos.push_back(SingleLepton_MET);
     //singleLeptonHistos.push_back(SingleLepton_HT);
     //singleLeptonHistos.push_back(SingleLepton_MT2);
@@ -84,7 +88,26 @@ int main()
     //singleLeptonHistos.push_back(SingleLepton_nVertices);
 
     std::map<std::string, TH1*>::iterator it;
-    for(it=baselineHistos.begin(); it!=baselineHistos.end(); ++it)  printf("%-15s : 0x%x\n", it->first.c_str(), it->second);
+    printf("------- Baseline -----------\n");
+    for(it=baselineHistos.begin(); it!=baselineHistos.end(); ++it)          printf("%-15s : 0x%x\n", it->first.c_str(), it->second);
+    printf("------- SingleLepton -------\n");
+    for(it=singleLeptonHistos.begin(); it!=singleLeptonHistos.end(); ++it)  printf("%-15s : 0x%x\n", it->first.c_str(), it->second);
+    
+    // make one plot for each variable
+    QuickPlot qp = QuickPlot();
+    for(it=baselineHistos.begin(); it!=baselineHistos.end(); ++it)
+    {
+        std::map<std::string, TH1*> histoMap;
+        histoMap.insert(std::pair<std::string, TH1*>("Baseline", it->second));
+        histoMap.insert(std::pair<std::string, TH1*>("SingleLepton", singleLeptonHistos[it->first]));
+        qp.plot(histoMap, it->first + " Distribution", it->first, "events");
+    }
+    
+    
+    
+    
+    
+    
     //for(auto& histo : singleLeptonHistos)   std::cout << "this should be nonzero: " << histo << std::endl;
 
     //QuickPlot qp = QuickPlot();
