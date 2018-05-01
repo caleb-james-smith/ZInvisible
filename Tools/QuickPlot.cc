@@ -24,6 +24,14 @@ void QuickPlot::plot(std::map<std::string, TH1*> histos, std::string p_title, st
     printf("Running QuickPlot::plot() for %s\n", p_title.c_str());
     TCanvas* c1 = new TCanvas("c1","c1");
     
+    //Create TLegend: TLegend(x1, y1, x2, y2)
+    TLegend *leg = new TLegend(0.65, 0.60, 0.85, 0.70);
+    leg->SetFillStyle(0);
+    leg->SetBorderSize(0);
+    leg->SetLineWidth(1);
+    leg->SetNColumns(1);
+    leg->SetTextFont(42);
+    
     // iterate over histograms and plot on same canvas 
     int i = 0;
     std::map<std::string, TH1*>::iterator it;
@@ -32,6 +40,8 @@ void QuickPlot::plot(std::map<std::string, TH1*> histos, std::string p_title, st
         // name will be for legend; h is histogram
         std::string name = it->first;
         TH1* h = it->second;
+
+        leg->AddEntry(h, name.c_str(), "F");
         
         h->SetTitle(p_title.c_str());
         h->GetXaxis()->SetTitle(x_title.c_str());
@@ -44,9 +54,16 @@ void QuickPlot::plot(std::map<std::string, TH1*> histos, std::string p_title, st
         i += 1;
     }
     
-    std::string fileName = m_directory + "/" + p_title + ".pdf";
+    //plot legend
+    leg->Draw("same");
+
+    std::string fileName;
     c1->Modified();
     c1->Update();
+    
+    fileName = m_directory + "/" + p_title + ".pdf";
+    c1->SaveAs(fileName.c_str());
+    fileName = m_directory + "/" + p_title + ".png";
     c1->SaveAs(fileName.c_str());
     
     // delete canvas to clean up dynamic memory
