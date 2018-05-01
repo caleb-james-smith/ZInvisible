@@ -61,10 +61,12 @@ void QuickPlot::plot(std::map<std::string, TH1*> histos, std::string p_title, st
     c1->Modified();
     c1->Update();
     
+    // save pdf
     fileName = m_directory + "/" + p_title + ".pdf";
     c1->SaveAs(fileName.c_str());
-    fileName = m_directory + "/" + p_title + ".png";
-    c1->SaveAs(fileName.c_str());
+    // png is poor quality
+    // fileName = m_directory + "/" + p_title + ".png";
+    // c1->SaveAs(fileName.c_str());
     
     // delete canvas to clean up dynamic memory
     if (c1) { c1->Close(); delete c1; c1 = 0; } 
