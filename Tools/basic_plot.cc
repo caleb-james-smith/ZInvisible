@@ -1,5 +1,7 @@
 #include <iostream>
 #include <stdio.h>
+#include <string>
+#include <vector>
 #include "TH1.h"
 #include "TFile.h"
 #include "TCanvas.h"
@@ -7,14 +9,15 @@
 int main()
 {
     printf("Time to plot.\n");
+    
     TFile *_file0 = TFile::Open("example.root");
     
     TH1* Baseline_Tau32 = nullptr;
-    TH1* QCD_Tau32 = nullptr;
-    TH1* ttbar_Tau32 = nullptr;
+    TH1* QCD_Tau32      = nullptr;
+    TH1* ttbar_Tau32    = nullptr;
     TH1* Baseline_Tau21 = nullptr;
-    TH1* QCD_Tau21 = nullptr;
-    TH1* ttbar_Tau21 = nullptr;
+    TH1* QCD_Tau21      = nullptr;
+    TH1* ttbar_Tau21    = nullptr;
     
     _file0->GetObject("Baseline_Tau32", Baseline_Tau32);
     _file0->GetObject("QCD_Tau32", QCD_Tau32);
