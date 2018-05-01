@@ -14,6 +14,7 @@ class QuickPlot
 
 private:
     // private things
+    std::string m_directory;
     std::vector<int> m_colors;
 
 public:

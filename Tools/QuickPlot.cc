@@ -11,6 +11,7 @@
 
 QuickPlot::QuickPlot()
 {
+    m_directory = "singleLeptonPlots";
     m_colors.push_back(kBlue-3);
     m_colors.push_back(kRed+2);
     m_colors.push_back(kAzure-2);
@@ -21,6 +22,36 @@ QuickPlot::QuickPlot()
 void QuickPlot::plot(std::map<std::string, TH1*> histos, std::string p_title, std::string x_title, std::string y_title)
 {
     printf("Running QuickPlot::plot() for %s\n", p_title.c_str());
+    TCanvas* c1 = new TCanvas("c1","c1");
+    
+    // iterate over histograms and plot on same canvas 
+    int i = 0;
+    std::map<std::string, TH1*>::iterator it;
+    for(it=histos.begin(); it!=histos.end(); ++it)
+    {
+        // name will be for legend; h is histogram
+        std::string name = it->first;
+        TH1* h = it->second;
+        
+        h->SetTitle(p_title.c_str());
+        h->GetXaxis()->SetTitle(x_title.c_str());
+        h->GetYaxis()->SetTitle(y_title.c_str());
+        h->SetLineColor(m_colors[i % m_colors.size()]);
+        
+        if(i==0)    h->Draw("hist E");
+        else        h->Draw("hist E same");
+        
+        i += 1;
+    }
+    
+    std::string fileName = m_directory + "/" + p_title + ".pdf";
+    c1->Modified();
+    c1->Update();
+    c1->SaveAs(fileName.c_str());
+    
+    // delete canvas to clean up dynamic memory
+    if (c1) { c1->Close(); delete c1; c1 = 0; } 
+    
 }
 
 int main()
@@ -79,14 +110,6 @@ int main()
     singleLeptonHistos.insert(std::pair<std::string, TH1*>("nTops",      SingleLepton_nTops));
     singleLeptonHistos.insert(std::pair<std::string, TH1*>("nVertices",  SingleLepton_nVertices));
 
-    //singleLeptonHistos.push_back(SingleLepton_MET);
-    //singleLeptonHistos.push_back(SingleLepton_HT);
-    //singleLeptonHistos.push_back(SingleLepton_MT2);
-    //singleLeptonHistos.push_back(SingleLepton_nJets);
-    //singleLeptonHistos.push_back(SingleLepton_nBJets);
-    //singleLeptonHistos.push_back(SingleLepton_nTops);
-    //singleLeptonHistos.push_back(SingleLepton_nVertices);
-
     std::map<std::string, TH1*>::iterator it;
     printf("------- Baseline -----------\n");
     for(it=baselineHistos.begin(); it!=baselineHistos.end(); ++it)          printf("%-15s : 0x%x\n", it->first.c_str(), it->second);
@@ -100,12 +123,8 @@ int main()
         std::map<std::string, TH1*> histoMap;
         histoMap.insert(std::pair<std::string, TH1*>("Baseline", it->second));
         histoMap.insert(std::pair<std::string, TH1*>("SingleLepton", singleLeptonHistos[it->first]));
-        qp.plot(histoMap, it->first + " Distribution", it->first, "events");
+        qp.plot(histoMap, it->first + "_Distribution", it->first, "events");
     }
-    
-    
-    
-    
     
     
     //for(auto& histo : singleLeptonHistos)   std::cout << "this should be nonzero: " << histo << std::endl;
