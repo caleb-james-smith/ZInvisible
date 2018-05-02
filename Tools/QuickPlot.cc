@@ -103,6 +103,22 @@ int main()
     TH1* SingleLepton_nTops     = nullptr;
     TH1* SingleLepton_nVertices = nullptr;
 
+    TH1* QCD_MET       = nullptr;
+    TH1* QCD_HT        = nullptr;
+    TH1* QCD_MT2       = nullptr;
+    TH1* QCD_nJets     = nullptr;
+    TH1* QCD_nBJets    = nullptr;
+    TH1* QCD_nTops     = nullptr;
+    TH1* QCD_nVertices = nullptr;
+
+    TH1* ttbar_MET       = nullptr;
+    TH1* ttbar_HT        = nullptr;
+    TH1* ttbar_MT2       = nullptr;
+    TH1* ttbar_nJets     = nullptr;
+    TH1* ttbar_nBJets    = nullptr;
+    TH1* ttbar_nTops     = nullptr;
+    TH1* ttbar_nVertices = nullptr;
+
     _file0->GetObject("AllEvents_MET",       AllEvents_MET);
     _file0->GetObject("AllEvents_HT",        AllEvents_HT);
     _file0->GetObject("AllEvents_MT2",       AllEvents_MT2);
@@ -127,9 +143,27 @@ int main()
     _file0->GetObject("SingleLepton_nTops",     SingleLepton_nTops);
     _file0->GetObject("SingleLepton_nVertices", SingleLepton_nVertices);
     
+    _file0->GetObject("QCD_MET",       QCD_MET);
+    _file0->GetObject("QCD_HT",        QCD_HT);
+    _file0->GetObject("QCD_MT2",       QCD_MT2);
+    _file0->GetObject("QCD_nJets",     QCD_nJets);
+    _file0->GetObject("QCD_nBJets",    QCD_nBJets);
+    _file0->GetObject("QCD_nTops",     QCD_nTops);
+    _file0->GetObject("QCD_nVertices", QCD_nVertices);
+    
+    _file0->GetObject("ttbar_MET",       ttbar_MET);
+    _file0->GetObject("ttbar_HT",        ttbar_HT);
+    _file0->GetObject("ttbar_MT2",       ttbar_MT2);
+    _file0->GetObject("ttbar_nJets",     ttbar_nJets);
+    _file0->GetObject("ttbar_nBJets",    ttbar_nBJets);
+    _file0->GetObject("ttbar_nTops",     ttbar_nTops);
+    _file0->GetObject("ttbar_nVertices", ttbar_nVertices);
+    
     std::map<std::string, TH1*> allEventsHistos;
     std::map<std::string, TH1*> baselineHistos;
     std::map<std::string, TH1*> singleLeptonHistos;
+    std::map<std::string, TH1*> qcdHistos;
+    std::map<std::string, TH1*> ttbarHistos;
     
     allEventsHistos.insert(std::pair<std::string, TH1*>("MET",        AllEvents_MET));
     allEventsHistos.insert(std::pair<std::string, TH1*>("HT",         AllEvents_HT));
@@ -155,6 +189,22 @@ int main()
     singleLeptonHistos.insert(std::pair<std::string, TH1*>("nTops",      SingleLepton_nTops));
     singleLeptonHistos.insert(std::pair<std::string, TH1*>("nVertices",  SingleLepton_nVertices));
 
+    qcdHistos.insert(std::pair<std::string, TH1*>("MET",        QCD_MET));
+    qcdHistos.insert(std::pair<std::string, TH1*>("HT",         QCD_HT));
+    qcdHistos.insert(std::pair<std::string, TH1*>("MT2",        QCD_MT2));
+    qcdHistos.insert(std::pair<std::string, TH1*>("nJets",      QCD_nJets));
+    qcdHistos.insert(std::pair<std::string, TH1*>("nBJets",     QCD_nBJets));
+    qcdHistos.insert(std::pair<std::string, TH1*>("nTops",      QCD_nTops));
+    qcdHistos.insert(std::pair<std::string, TH1*>("nVertices",  QCD_nVertices));
+
+    ttbarHistos.insert(std::pair<std::string, TH1*>("MET",        ttbar_MET));
+    ttbarHistos.insert(std::pair<std::string, TH1*>("HT",         ttbar_HT));
+    ttbarHistos.insert(std::pair<std::string, TH1*>("MT2",        ttbar_MT2));
+    ttbarHistos.insert(std::pair<std::string, TH1*>("nJets",      ttbar_nJets));
+    ttbarHistos.insert(std::pair<std::string, TH1*>("nBJets",     ttbar_nBJets));
+    ttbarHistos.insert(std::pair<std::string, TH1*>("nTops",      ttbar_nTops));
+    ttbarHistos.insert(std::pair<std::string, TH1*>("nVertices",  ttbar_nVertices));
+
     std::map<std::string, TH1*>::iterator it;
     printf("------- AllEvents ----------\n");
     for(it=allEventsHistos.begin(); it!=allEventsHistos.end(); ++it)        printf("%-15s : 0x%x\n", it->first.c_str(), it->second);
@@ -162,6 +212,10 @@ int main()
     for(it=baselineHistos.begin(); it!=baselineHistos.end(); ++it)          printf("%-15s : 0x%x\n", it->first.c_str(), it->second);
     printf("------- SingleLepton -------\n");
     for(it=singleLeptonHistos.begin(); it!=singleLeptonHistos.end(); ++it)  printf("%-15s : 0x%x\n", it->first.c_str(), it->second);
+    printf("------- QCD ----------------\n");
+    for(it=qcdHistos.begin(); it!=qcdHistos.end(); ++it)                    printf("%-15s : 0x%x\n", it->first.c_str(), it->second);
+    printf("------- ttbar ----------------\n");
+    for(it=ttbarHistos.begin(); it!=ttbarHistos.end(); ++it)                printf("%-15s : 0x%x\n", it->first.c_str(), it->second);
     
     // make one plot for each variable
     QuickPlot qp = QuickPlot();
@@ -174,6 +228,8 @@ int main()
         histoMap.insert(std::pair<std::string, TH1*>("AllEvents",       allEventsHistos[key]));
         histoMap.insert(std::pair<std::string, TH1*>("Baseline",        baselineHistos[key]));
         histoMap.insert(std::pair<std::string, TH1*>("SingleLepton",    singleLeptonHistos[key]));
+        histoMap.insert(std::pair<std::string, TH1*>("QCD",             qcdHistos[key]));
+        histoMap.insert(std::pair<std::string, TH1*>("ttbar",           ttbarHistos[key]));
         
         qp.plot(histoMap, it->first + "_Distribution", it->first, "weighted events");
     }
