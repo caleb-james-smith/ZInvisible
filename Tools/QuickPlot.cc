@@ -19,13 +19,13 @@ QuickPlot::QuickPlot()
     m_colors.push_back(kViolet-6);
 }
 
-void QuickPlot::plot(std::map<std::string, TH1*> histos, std::string p_title, std::string x_title, std::string y_title)
+void QuickPlot::plot(std::map<std::string, TH1*> histos, std::vector<std::string> histoNames, std::string p_title, std::string x_title, std::string y_title)
 {
     printf("Running QuickPlot::plot() for %s\n", p_title.c_str());
     TCanvas* c1 = new TCanvas("c1","c1");
     
     //Create TLegend: TLegend(x1, y1, x2, y2)
-    TLegend *leg = new TLegend(0.65, 0.60, 0.85, 0.70);
+    TLegend *leg = new TLegend(0.65, 0.50, 0.85, 0.70);
     leg->SetFillStyle(0);
     leg->SetBorderSize(0);
     leg->SetLineWidth(1);
@@ -33,15 +33,17 @@ void QuickPlot::plot(std::map<std::string, TH1*> histos, std::string p_title, st
     leg->SetTextFont(42);
     
     // iterate over histograms and plot on same canvas 
+    // use histoNames to maintain histo order
     int i = 0;
-    std::map<std::string, TH1*>::iterator it;
-    for(it=histos.begin(); it!=histos.end(); ++it)
+    //std::map<std::string, TH1*>::iterator it;
+    for(auto& histoName : histoNames)
+    //for(it=histos.begin(); it!=histos.end(); ++it)
     {
         // name will be for legend; h is histogram
-        std::string name = it->first;
-        TH1* h = it->second;
+        //std::string histoName = it->first;
+        TH1* h = histos[histoName];
 
-        leg->AddEntry(h, name.c_str(), "F");
+        leg->AddEntry(h, histoName.c_str(), "F");
         
         h->SetTitle(p_title.c_str());
         h->GetXaxis()->SetTitle(x_title.c_str());
@@ -217,21 +219,28 @@ int main()
     printf("------- ttbar ----------------\n");
     for(it=ttbarHistos.begin(); it!=ttbarHistos.end(); ++it)                printf("%-15s : 0x%x\n", it->first.c_str(), it->second);
     
+    // order histograms in vector
+    std::vector<std::string> histoNames;
+    histoNames.push_back("AllEvents");
+    histoNames.push_back("Baseline");
+    histoNames.push_back("SingleLepton");
+    histoNames.push_back("QCD");
+    histoNames.push_back("ttbar");
     // make one plot for each variable
     QuickPlot qp = QuickPlot();
     for(it=allEventsHistos.begin(); it!=allEventsHistos.end(); ++it)
     {
-        std::string key = it->first;
+        std::string variable = it->first;
         std::map<std::string, TH1*> histoMap;
         
         // begin with tallest histogram so that it will set the range
-        histoMap.insert(std::pair<std::string, TH1*>("AllEvents",       allEventsHistos[key]));
-        histoMap.insert(std::pair<std::string, TH1*>("Baseline",        baselineHistos[key]));
-        histoMap.insert(std::pair<std::string, TH1*>("SingleLepton",    singleLeptonHistos[key]));
-        histoMap.insert(std::pair<std::string, TH1*>("QCD",             qcdHistos[key]));
-        histoMap.insert(std::pair<std::string, TH1*>("ttbar",           ttbarHistos[key]));
+        histoMap.insert(std::pair<std::string, TH1*>("AllEvents",       allEventsHistos[variable]));
+        histoMap.insert(std::pair<std::string, TH1*>("Baseline",        baselineHistos[variable]));
+        histoMap.insert(std::pair<std::string, TH1*>("SingleLepton",    singleLeptonHistos[variable]));
+        histoMap.insert(std::pair<std::string, TH1*>("QCD",             qcdHistos[variable]));
+        histoMap.insert(std::pair<std::string, TH1*>("ttbar",           ttbarHistos[variable]));
         
-        qp.plot(histoMap, it->first + "_Distribution", it->first, "weighted events");
+        qp.plot(histoMap, histoNames, variable + "_Distribution", variable, "weighted events");
     }
     
 }
