@@ -48,6 +48,7 @@ void QuickPlot::plot(std::map<std::string, TH1*> histos, std::string p_title, st
         h->GetYaxis()->SetTitle(y_title.c_str());
         h->SetLineColor(m_colors[i % m_colors.size()]);
         
+        // begin with tallest histogram so that it will set the range
         if(i==0)    h->Draw("hist E");
         else        h->Draw("hist E same");
         
@@ -78,6 +79,14 @@ int main()
     
     TFile *_file0 = TFile::Open("example.root");
    
+    TH1* AllEvents_MET       = nullptr;
+    TH1* AllEvents_HT        = nullptr;
+    TH1* AllEvents_MT2       = nullptr;
+    TH1* AllEvents_nJets     = nullptr;
+    TH1* AllEvents_nBJets    = nullptr;
+    TH1* AllEvents_nTops     = nullptr;
+    TH1* AllEvents_nVertices = nullptr;
+
     TH1* Baseline_MET       = nullptr;
     TH1* Baseline_HT        = nullptr;
     TH1* Baseline_MT2       = nullptr;
@@ -94,6 +103,14 @@ int main()
     TH1* SingleLepton_nTops     = nullptr;
     TH1* SingleLepton_nVertices = nullptr;
 
+    _file0->GetObject("AllEvents_MET",       AllEvents_MET);
+    _file0->GetObject("AllEvents_HT",        AllEvents_HT);
+    _file0->GetObject("AllEvents_MT2",       AllEvents_MT2);
+    _file0->GetObject("AllEvents_nJets",     AllEvents_nJets);
+    _file0->GetObject("AllEvents_nBJets",    AllEvents_nBJets);
+    _file0->GetObject("AllEvents_nTops",     AllEvents_nTops);
+    _file0->GetObject("AllEvents_nVertices", AllEvents_nVertices);
+    
     _file0->GetObject("Baseline_MET",       Baseline_MET);
     _file0->GetObject("Baseline_HT",        Baseline_HT);
     _file0->GetObject("Baseline_MT2",       Baseline_MT2);
@@ -110,9 +127,18 @@ int main()
     _file0->GetObject("SingleLepton_nTops",     SingleLepton_nTops);
     _file0->GetObject("SingleLepton_nVertices", SingleLepton_nVertices);
     
+    std::map<std::string, TH1*> allEventsHistos;
     std::map<std::string, TH1*> baselineHistos;
     std::map<std::string, TH1*> singleLeptonHistos;
     
+    allEventsHistos.insert(std::pair<std::string, TH1*>("MET",        AllEvents_MET));
+    allEventsHistos.insert(std::pair<std::string, TH1*>("HT",         AllEvents_HT));
+    allEventsHistos.insert(std::pair<std::string, TH1*>("MT2",        AllEvents_MT2));
+    allEventsHistos.insert(std::pair<std::string, TH1*>("nJets",      AllEvents_nJets));
+    allEventsHistos.insert(std::pair<std::string, TH1*>("nBJets",     AllEvents_nBJets));
+    allEventsHistos.insert(std::pair<std::string, TH1*>("nTops",      AllEvents_nTops));
+    allEventsHistos.insert(std::pair<std::string, TH1*>("nVertices",  AllEvents_nVertices));
+
     baselineHistos.insert(std::pair<std::string, TH1*>("MET",        Baseline_MET));
     baselineHistos.insert(std::pair<std::string, TH1*>("HT",         Baseline_HT));
     baselineHistos.insert(std::pair<std::string, TH1*>("MT2",        Baseline_MT2));
@@ -130,6 +156,8 @@ int main()
     singleLeptonHistos.insert(std::pair<std::string, TH1*>("nVertices",  SingleLepton_nVertices));
 
     std::map<std::string, TH1*>::iterator it;
+    printf("------- AllEvents ----------\n");
+    for(it=allEventsHistos.begin(); it!=allEventsHistos.end(); ++it)        printf("%-15s : 0x%x\n", it->first.c_str(), it->second);
     printf("------- Baseline -----------\n");
     for(it=baselineHistos.begin(); it!=baselineHistos.end(); ++it)          printf("%-15s : 0x%x\n", it->first.c_str(), it->second);
     printf("------- SingleLepton -------\n");
@@ -137,12 +165,17 @@ int main()
     
     // make one plot for each variable
     QuickPlot qp = QuickPlot();
-    for(it=baselineHistos.begin(); it!=baselineHistos.end(); ++it)
+    for(it=allEventsHistos.begin(); it!=allEventsHistos.end(); ++it)
     {
+        std::string key = it->first;
         std::map<std::string, TH1*> histoMap;
-        histoMap.insert(std::pair<std::string, TH1*>("Baseline", it->second));
-        histoMap.insert(std::pair<std::string, TH1*>("SingleLepton", singleLeptonHistos[it->first]));
-        qp.plot(histoMap, it->first + "_Distribution", it->first, "events");
+        
+        // begin with tallest histogram so that it will set the range
+        histoMap.insert(std::pair<std::string, TH1*>("AllEvents",       allEventsHistos[key]));
+        histoMap.insert(std::pair<std::string, TH1*>("Baseline",        baselineHistos[key]));
+        histoMap.insert(std::pair<std::string, TH1*>("SingleLepton",    singleLeptonHistos[key]));
+        
+        qp.plot(histoMap, it->first + "_Distribution", it->first, "weighted events");
     }
     
 }

@@ -224,6 +224,7 @@ int main(int argc, char* argv[])
 
     int events = 0, pevents = 0;
 
+    HistoContainer histsAllEvents("AllEvents");
     HistoContainer histsBaseline("Baseline");
     HistoContainer histsSingleLepton("SingleLepton");
     HistoContainer histsQCD("QCD");
@@ -324,6 +325,9 @@ int main(int argc, char* argv[])
                 int cntNJetsPt30Eta24 = AnaFunctions::countJets(tr.getVec<TLorentzVector>(jetVecLabel), AnaConsts::pt30Eta24Arr);
 
 
+                //All Events
+                histsAllEvents.fill(tr, eWeight, trand);
+                
                 //Baseline
                 if( passBaseline )
                 {
@@ -391,6 +395,7 @@ int main(int argc, char* argv[])
             throw "File is zombie";
         }
 
+        histsAllEvents.save(f);
         histsBaseline.save(f);
         histsSingleLepton.save(f);
         histsQCD.save(f);
