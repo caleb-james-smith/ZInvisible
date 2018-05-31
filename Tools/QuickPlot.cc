@@ -257,8 +257,8 @@ int main()
     histoNames.push_back("Baseline");
     histoNames.push_back("SingleLepton");
     histoNames.push_back("DoubleLepton");
-    histoNames.push_back("QCD");
-    histoNames.push_back("ttbar");
+    //histoNames.push_back("QCD");
+    //histoNames.push_back("ttbar");
     // make one plot for each variable
     QuickPlot qp = QuickPlot();
     for(it=allEventsHistos.begin(); it!=allEventsHistos.end(); ++it)
@@ -271,8 +271,8 @@ int main()
         histoMap.insert(std::pair<std::string, TH1*>("Baseline",        baselineHistos[variable]));
         histoMap.insert(std::pair<std::string, TH1*>("SingleLepton",    singleLeptonHistos[variable]));
         histoMap.insert(std::pair<std::string, TH1*>("DoubleLepton",    doubleLeptonHistos[variable]));
-        histoMap.insert(std::pair<std::string, TH1*>("QCD",             qcdHistos[variable]));
-        histoMap.insert(std::pair<std::string, TH1*>("ttbar",           ttbarHistos[variable]));
+        //histoMap.insert(std::pair<std::string, TH1*>("QCD",             qcdHistos[variable]));
+        //histoMap.insert(std::pair<std::string, TH1*>("ttbar",           ttbarHistos[variable]));
         
         qp.plot(histoMap, histoNames, variable + "_Distribution", variable, "weighted events");
     }
