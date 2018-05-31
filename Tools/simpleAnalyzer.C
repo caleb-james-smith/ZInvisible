@@ -227,6 +227,7 @@ int main(int argc, char* argv[])
     HistoContainer histsAllEvents("AllEvents");
     HistoContainer histsBaseline("Baseline");
     HistoContainer histsSingleLepton("SingleLepton");
+    HistoContainer histsDoubleLepton("DoubleLepton");
     HistoContainer histsQCD("QCD");
     HistoContainer histsTTbar("ttbar");
 
@@ -295,6 +296,7 @@ int main(int argc, char* argv[])
                 const double& ht                   = tr.getVar<double>("HTTopTag");
                 
                 const bool&   passSingleLepton     = tr.getVar<bool>("passBaselineSingleLeptonlostlept");
+                const bool&   passDoubleLepton     = tr.getVar<bool>("passBaselineDoubleLeptonlostlept");
 
                 const bool&   passMuTrigger        = tr.getVar<bool>("passMuTrigger");
                 const bool&   passElecTrigger      = tr.getVar<bool>("passElecTrigger");
@@ -338,6 +340,12 @@ int main(int argc, char* argv[])
                 if( passSingleLepton )
                 {
                     histsSingleLepton.fill(tr, eWeight, trand);
+                }
+
+                //Double Lepton
+                if( passDoubleLepton )
+                {
+                    histsDoubleLepton.fill(tr, eWeight, trand);
                 }
 
                 //High HT QCD control sample
@@ -398,6 +406,7 @@ int main(int argc, char* argv[])
         histsAllEvents.save(f);
         histsBaseline.save(f);
         histsSingleLepton.save(f);
+        histsDoubleLepton.save(f);
         histsQCD.save(f);
         histsTTbar.save(f);
 

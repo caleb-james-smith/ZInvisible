@@ -11,12 +11,17 @@
 
 QuickPlot::QuickPlot()
 {
-    m_directory = "singleLeptonPlots";
+    m_directory = "leptonPlots";
     m_colors.push_back(kBlue-3);
     m_colors.push_back(kRed+2);
     m_colors.push_back(kAzure-2);
     m_colors.push_back(kGreen+2);
     m_colors.push_back(kViolet-6);
+    m_colors.push_back(kOrange+7);
+    m_colors.push_back(kCyan+2);
+    m_colors.push_back(kPink-8);
+    m_colors.push_back(kTeal+3);
+    m_colors.push_back(kYellow+2);
 }
 
 void QuickPlot::plot(std::map<std::string, TH1*> histos, std::vector<std::string> histoNames, std::string p_title, std::string x_title, std::string y_title)
@@ -67,7 +72,7 @@ void QuickPlot::plot(std::map<std::string, TH1*> histos, std::vector<std::string
     // save pdf
     fileName = m_directory + "/" + p_title + ".pdf";
     c1->SaveAs(fileName.c_str());
-    // png is poor quality
+    // png is poor quality: use script to convert pdf to png
     // fileName = m_directory + "/" + p_title + ".png";
     // c1->SaveAs(fileName.c_str());
     
@@ -104,6 +109,14 @@ int main()
     TH1* SingleLepton_nBJets    = nullptr;
     TH1* SingleLepton_nTops     = nullptr;
     TH1* SingleLepton_nVertices = nullptr;
+
+    TH1* DoubleLepton_MET       = nullptr;
+    TH1* DoubleLepton_HT        = nullptr;
+    TH1* DoubleLepton_MT2       = nullptr;
+    TH1* DoubleLepton_nJets     = nullptr;
+    TH1* DoubleLepton_nBJets    = nullptr;
+    TH1* DoubleLepton_nTops     = nullptr;
+    TH1* DoubleLepton_nVertices = nullptr;
 
     TH1* QCD_MET       = nullptr;
     TH1* QCD_HT        = nullptr;
@@ -145,6 +158,14 @@ int main()
     _file0->GetObject("SingleLepton_nTops",     SingleLepton_nTops);
     _file0->GetObject("SingleLepton_nVertices", SingleLepton_nVertices);
     
+    _file0->GetObject("DoubleLepton_MET",       DoubleLepton_MET);
+    _file0->GetObject("DoubleLepton_HT",        DoubleLepton_HT);
+    _file0->GetObject("DoubleLepton_MT2",       DoubleLepton_MT2);
+    _file0->GetObject("DoubleLepton_nJets",     DoubleLepton_nJets);
+    _file0->GetObject("DoubleLepton_nBJets",    DoubleLepton_nBJets);
+    _file0->GetObject("DoubleLepton_nTops",     DoubleLepton_nTops);
+    _file0->GetObject("DoubleLepton_nVertices", DoubleLepton_nVertices);
+    
     _file0->GetObject("QCD_MET",       QCD_MET);
     _file0->GetObject("QCD_HT",        QCD_HT);
     _file0->GetObject("QCD_MT2",       QCD_MT2);
@@ -164,6 +185,7 @@ int main()
     std::map<std::string, TH1*> allEventsHistos;
     std::map<std::string, TH1*> baselineHistos;
     std::map<std::string, TH1*> singleLeptonHistos;
+    std::map<std::string, TH1*> doubleLeptonHistos;
     std::map<std::string, TH1*> qcdHistos;
     std::map<std::string, TH1*> ttbarHistos;
     
@@ -191,6 +213,14 @@ int main()
     singleLeptonHistos.insert(std::pair<std::string, TH1*>("nTops",      SingleLepton_nTops));
     singleLeptonHistos.insert(std::pair<std::string, TH1*>("nVertices",  SingleLepton_nVertices));
 
+    doubleLeptonHistos.insert(std::pair<std::string, TH1*>("MET",        DoubleLepton_MET));
+    doubleLeptonHistos.insert(std::pair<std::string, TH1*>("HT",         DoubleLepton_HT));
+    doubleLeptonHistos.insert(std::pair<std::string, TH1*>("MT2",        DoubleLepton_MT2));
+    doubleLeptonHistos.insert(std::pair<std::string, TH1*>("nJets",      DoubleLepton_nJets));
+    doubleLeptonHistos.insert(std::pair<std::string, TH1*>("nBJets",     DoubleLepton_nBJets));
+    doubleLeptonHistos.insert(std::pair<std::string, TH1*>("nTops",      DoubleLepton_nTops));
+    doubleLeptonHistos.insert(std::pair<std::string, TH1*>("nVertices",  DoubleLepton_nVertices));
+
     qcdHistos.insert(std::pair<std::string, TH1*>("MET",        QCD_MET));
     qcdHistos.insert(std::pair<std::string, TH1*>("HT",         QCD_HT));
     qcdHistos.insert(std::pair<std::string, TH1*>("MT2",        QCD_MT2));
@@ -214,6 +244,8 @@ int main()
     for(it=baselineHistos.begin(); it!=baselineHistos.end(); ++it)          printf("%-15s : 0x%x\n", it->first.c_str(), it->second);
     printf("------- SingleLepton -------\n");
     for(it=singleLeptonHistos.begin(); it!=singleLeptonHistos.end(); ++it)  printf("%-15s : 0x%x\n", it->first.c_str(), it->second);
+    printf("------- DoubleLepton -------\n");
+    for(it=doubleLeptonHistos.begin(); it!=doubleLeptonHistos.end(); ++it)  printf("%-15s : 0x%x\n", it->first.c_str(), it->second);
     printf("------- QCD ----------------\n");
     for(it=qcdHistos.begin(); it!=qcdHistos.end(); ++it)                    printf("%-15s : 0x%x\n", it->first.c_str(), it->second);
     printf("------- ttbar ----------------\n");
@@ -224,6 +256,7 @@ int main()
     histoNames.push_back("AllEvents");
     histoNames.push_back("Baseline");
     histoNames.push_back("SingleLepton");
+    histoNames.push_back("DoubleLepton");
     histoNames.push_back("QCD");
     histoNames.push_back("ttbar");
     // make one plot for each variable
@@ -237,6 +270,7 @@ int main()
         histoMap.insert(std::pair<std::string, TH1*>("AllEvents",       allEventsHistos[variable]));
         histoMap.insert(std::pair<std::string, TH1*>("Baseline",        baselineHistos[variable]));
         histoMap.insert(std::pair<std::string, TH1*>("SingleLepton",    singleLeptonHistos[variable]));
+        histoMap.insert(std::pair<std::string, TH1*>("DoubleLepton",    doubleLeptonHistos[variable]));
         histoMap.insert(std::pair<std::string, TH1*>("QCD",             qcdHistos[variable]));
         histoMap.insert(std::pair<std::string, TH1*>("ttbar",           ttbarHistos[variable]));
         
